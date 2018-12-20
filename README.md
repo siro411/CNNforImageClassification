@@ -1,5 +1,5 @@
 # CNNforImageClassification
-##Create training data from the UTKFace dataset
+## Create training data from the UTKFace dataset
 
 Firstly, download images from the website of the UTKFace dataset. UTKFace.tar.gz can be downloaded from Aligned&Cropped Faces in Datasets section. Then, extract the archive.
 
