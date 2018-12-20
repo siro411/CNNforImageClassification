@@ -6,24 +6,11 @@ import scipy.io
 import cv2
 
 
-def get_args():
-    parser = argparse.ArgumentParser(description="This script creates database for training from the UTKFace dataset.",
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--input", "-i", type=str, required=True,
-                        help="path to the UTKFace image directory")
-    parser.add_argument("--output", "-o", type=str, required=True,
-                        help="path to output database mat file")
-    parser.add_argument("--img_size", type=int, default=64,
-                        help="output image size")
-    args = parser.parse_args()
-    return args
-
 
 def main():
-    args = get_args()
-    image_dir = Path(args.input)
-    output_path = args.output
-    img_size = args.img_size
+    image_dir = Path("/Users/annaying/final projet/UTKFace")
+    output_path = "/Users/annaying/final projet/UTKFace"
+    img_size = 64
 
     out_genders = []
     out_ages = []
