@@ -6,4 +6,4 @@ Firstly, download images from the website of the UTKFace dataset. UTKFace.tar.gz
 Finally, run the following script to create the training data:
 
 
-**python3 create_db_utkface.py -i UTKFace -o UTKFace.mat**
+**export the file UTKFace.mat**
