@@ -55,7 +55,7 @@ def main():
 
     model = WideResNet(image_size, depth=depth, k=k)()
     opt = Adam(lr=lr)
-    model.compile(optimizer=opt, loss="categorical_crossentropy",
+    model.compile(optimizer=opt, loss=["categorical_crossentropy", "categorical_crossentropy"],
                   metrics=['accuracy'])
 
     #"Model summary..."
