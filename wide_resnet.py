@@ -13,7 +13,7 @@ np.random.seed(2 ** 10)
 
 
 class WideResNet:
-    def __init__(self, image_size, depth=16, k=8):
+    def __init__(self, image_size, depth=10, k=8):
         self._depth = depth
         self._k = k
         self._dropout_probability = 0
@@ -130,14 +130,13 @@ class WideResNet:
         # Classifier block
         pool = AveragePooling2D(pool_size=(8, 8), strides=(1, 1), padding="same")(relu)
         flatten = Flatten()(pool)
-        # predictions_g = Dense(units=2, kernel_initializer=self._weight_init, use_bias=self._use_bias,
-        #                       kernel_regularizer=l2(self._weight_decay), activation="softmax",
-        #                       name="pred_gender")(flatten)
+        predictions_g = Dense(units=2, kernel_initializer=self._weight_init, use_bias=self._use_bias,
+                              kernel_regularizer=l2(self._weight_decay), activation="softmax",
+                              name="pred_gender")(flatten)
         predictions_a = Dense(units=101, kernel_initializer=self._weight_init, use_bias=self._use_bias,
                               kernel_regularizer=l2(self._weight_decay), activation="softmax",
                               name="pred_age")(flatten)
-        # model = Model(inputs=inputs, outputs=[predictions_g, predictions_a])
-        model = Model(inputs=inputs, outputs=predictions_a)
+        model = Model(inputs=inputs, outputs=[predictions_g, predictions_a])
 
         return model
 

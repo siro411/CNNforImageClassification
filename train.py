@@ -1,12 +1,11 @@
 from pathlib import Path
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
-from keras.optimizers import SGD, Adam
+from keras.optimizers import Adam
 from keras.utils import np_utils
-from keras.preprocessing.image import ImageDataGenerator
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from keras import backend as K
 from wide_resnet import WideResNet
 
 
@@ -33,6 +32,7 @@ class Schedule:
         return self.initial_lr * 0.008
 
 
+
 def main():
 
 
@@ -40,21 +40,21 @@ def main():
     batch_size = 64
     nb_epochs = 20
     lr = 0.1
-    depth = 16
+    depth = 10
     k = 8
     validation_split = 0.1
-    output_path = Path(__file__).resolve().parent.joinpath("/Users/annaying/final projet/UTKFace.mat")
+    output_path = Path(__file__).resolve().parent.joinpath("/Users/annaying/final project")
     output_path.mkdir(parents=True, exist_ok=True)
 
 
 
     image, gender, age, _, image_size, _ = load_data(input_path)
     X_data = image
-    # y_data_g = np_utils.to_categorical(gender, 2)
+    y_data_g = np_utils.to_categorical(gender)[:,[0,1]]
     y_data_a = np_utils.to_categorical(age, 101)
 
     model = WideResNet(image_size, depth=depth, k=k)()
-    opt = SGD(lr=lr, momentum=0.9, nesterov=True)
+    opt = Adam(lr=lr)
     model.compile(optimizer=opt, loss="categorical_crossentropy",
                   metrics=['accuracy'])
 
@@ -63,10 +63,10 @@ def main():
     model.summary()
 
     callbacks = [LearningRateScheduler(schedule=Schedule(nb_epochs, lr)),
-                 ModelCheckpoint(str(output_path) + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+                 ModelCheckpoint(str(output_path) + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5",  #02d 宽度2，自动补齐左边（右对齐）.2f 保留小数点后两位
                                  monitor="val_loss",
-                                 verbose=1,
-                                 save_best_only=True,
+                                 verbose=1,   #有进度条为1
+                                 save_best_only=True, #设置当为True时，将只保存在验证集上性能最好的模型
                                  mode="auto")
                  ]
 
@@ -76,20 +76,20 @@ def main():
     indices = np.arange(data_num)
     np.random.shuffle(indices)
     X_data = X_data[indices]
-    # y_data_g = y_data_g[indices]
+    y_data_g = y_data_g[indices]
     y_data_a = y_data_a[indices]
     train_num = int(data_num * (1 - validation_split))
     X_train = X_data[:train_num]
     X_test = X_data[train_num:]
-    # y_train_g = y_data_g[:train_num]
-    # y_test_g = y_data_g[train_num:]
+    y_train_g = y_data_g[:train_num]
+    y_test_g = y_data_g[train_num:]
     y_train_a = y_data_a[:train_num]
     y_test_a = y_data_a[train_num:]
 
 
 
-    hist = model.fit(X_train, y_train_a, batch_size=batch_size, epochs=nb_epochs, callbacks=callbacks,
-                         validation_data=(X_test,  y_test_a))
+    hist = model.fit(X_train, [y_train_g, y_train_a], batch_size=batch_size, epochs=nb_epochs, callbacks=callbacks,
+                         validation_data=(X_test, [y_test_g, y_test_a]))
 
     #"Saving history..."
     pd.DataFrame(hist.history).to_hdf(output_path.joinpath("history_{}_{}.h5".format(depth, k)), "history")

@@ -21,8 +21,8 @@ def main():
         out_genders.append(int(gender))
         out_ages.append(min(int(age), 100))
         img = cv2.imread(str(image_path))
-        # out_imgs.append(cv2.resize(img, (img_size, img_size)))  #BGR in opencv
-        out_imgs.append(cv2.cvtColor(cv2.resize(img, (img_size, img_size)), cv2.COLOR_BGR2RGB)) #RGB
+        out_imgs.append(cv2.resize(img, (img_size, img_size)))  #BGR in opencv
+        # out_imgs.append(cv2.cvtColor(cv2.resize(img, (img_size, img_size)), cv2.COLOR_BGR2RGB)) #RGB
     output = {"image": np.array(out_imgs), "gender": np.array(out_genders), "age": np.array(out_ages),
               "db": "utk", "img_size": img_size, "min_score": -1}
     scipy.io.savemat(output_path, output)
